@@ -8,7 +8,7 @@ class Car extends Model
 {
     protected table = 'cars';
 
-    // Relación de muchos a uno
+    // Relación de muchos a uno de la bd
     public function user(){
     	return $this->belongsTo('App\User', 'user_id');
     }
