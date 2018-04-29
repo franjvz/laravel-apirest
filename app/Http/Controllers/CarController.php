@@ -14,16 +14,44 @@ class CarController extends Controller
 	}
 
     public function index(Request $request){
+
     	$checkToken = $this->jwtAuth->checkIfRequestValidated($request);
     	if ($checkToken){
-    		echo "Index de car controller autenticado"; die();
+
+    		return response()->json(array(
+    			'cars' => Car::all()->load('user'),
+    			'status' => 'success'
+    		),200);
     	}else{
-    		echo "Index de car controller sin login"; die();
+
+    		return response()->json(array(
+    			'status' => 'Unauthorized',
+    			'message' => 'No se pueden listar los vehículos'
+    		),401);
+    	}
+    }
+
+    public function show($id, Request $request){
+
+    	$checkToken = $this->jwtAuth->checkIfRequestValidated($request);
+    	if ($checkToken){
+    		$car = Car::find($id)->load('user');
+	    	return response()->json(array(
+	    		'car' 	 => $car,
+	    		'status' => 'success'
+	    	),200);
+    	}else{
+
+    		return response()->json(array(
+    			'status' => 'Unauthorized',
+    			'message' => 'Sin acceso autorizado'
+    		),401);
     	}
     }
 
     // Dar de alta un nuevo vehículo
     public function store(Request $request){
+
     	$checkToken = $this->jwtAuth->checkIfRequestValidated($request);
     	if ($checkToken){
     		// Recoger datos post
@@ -34,19 +62,18 @@ class CarController extends Controller
     		$user = $this->jwtAuth->checkToken($this->jwtAuth->hash, true);
 
     		// Validar datos parametros recibidos
-    		$request->merge($params_array);
-    		try{
-				$validate = 
-					$this->validate($request, [
-			    		"title" => "required|min:5",
-			    		"description" => "required",
-			    		"status" => "required",
-			    		"price" => "required"
-			    	]);
-    		}catch(\Illuminate\Validation\ValidationException $e){
-    			return $e->getResponse();
-    		}
-    		
+			$validate = 
+				\Validator::make($params_array, [
+		    		"title" => "required|min:5",
+		    		"description" => "required",
+		    		"status" => "required",
+		    		"price" => "required"
+		    	]);
+
+			if($validate->fails()){
+				return response()->json($validate->errors(), 400);
+			}
+
   			// Guardar el coche
   			$params = json_decode($json);
     		$car = new Car();
