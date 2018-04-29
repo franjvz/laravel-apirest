@@ -40,7 +40,7 @@ class JwtAuth{
 		$jwt = JWT::encode($token, $this->key, 'HS256');
 		$decoded = JWT::decode($jwt, $this->key, array('HS256'));
 
-		if(!is_null($getToken))
+		if(is_null($getToken))
 			return $jwt;
 		else
 			return $decoded;

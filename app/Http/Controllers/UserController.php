@@ -76,16 +76,25 @@ class UserController extends Controller
 
         $email = (!is_null($json) && isset($params->email)) ? $params->email : null;
         $password = (!is_null($json) && isset($params->password)) ? $params->password : null;
-        $getToken = (!is_null($json) && isset($params->getToken)) ? $params->getToken : true;
+        $getToken = (!is_null($json) && isset($params->getToken)) ? $params->getToken : null;
 
         // Cifrar la password
         $pwd = hash('sha256', $password);
 
-        if(!is_null($email) && !is_null($password)){
+        if(!is_null($email) && !is_null($password) && ($getToken == null || $getToken == 'false')){
             $signup = $jwtAuth->signup($email, $pwd);
 
-            return response()->json($signup, 200);
+        }elseif($getToken != null){
+            $signup = $jwtAuth->signup($email, $pwd, $getToken);
+
+        }else{
+            $signup = array(
+                'status'    =>  'error',
+                'message'   => 'Envia tus datos por POST'
+            );
         }
+
+        return response()->json($signup, 200);
     }
 
     public function index(){
