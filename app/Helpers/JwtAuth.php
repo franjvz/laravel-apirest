@@ -2,14 +2,17 @@
 namespace App\Helpers;
 
 use Firebase\JWT\JWT;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\User;
 
 class JwtAuth{
 	public $key;
+	public $hash;
 
 	public function __construct(){
 		$this->key = 'esta-es-mi-clave-secreta-3155326236??!!';
+		$this->hash = null;
 	}
 
 	public function signup($email, $password, $getToken=null){
@@ -46,8 +49,10 @@ class JwtAuth{
 			return $decoded;
 	}
 
+	// Funcion que comprueba el token
 	public function checkToken($jwt, $getIdentity = false){
 
+		// Decodificar el token con la key establecida
 		try{
 			$decoded = JWT::decode($jwt, $this->key, array('HS256'));
 		}catch(\UnexpectedValueException $e){
@@ -56,16 +61,26 @@ class JwtAuth{
 			$auth = false;
 		}
 
-		if(is_object($decoded) && isset($decoded->sub)){
+		// Comprobación para ver si se ha descodificado o no
+		if(isset($decoded) && is_object($decoded) && isset($decoded->sub))
 			$auth = true;
-		}else{
+		else
 			$auth = false;
-		}
-
-		if($getIdentity){
+		
+		// Flag identity que llega de parametro
+		if($getIdentity)
 			return $decoded;
-		}
 
+		// Devolver resultado
 		return $auth;
 	}
+
+	// Funcion que comprueba si la Request va validada o no
+	public function checkIfRequestValidated(Request $request){
+
+		$this->hash = $request->header('Authorization', null);
+    	return $this->checkToken($this->hash);
+
+	}
+	
 }

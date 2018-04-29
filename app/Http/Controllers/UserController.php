@@ -55,7 +55,7 @@ class UserController extends Controller
     			);
     		}
     	}
-    	else
+    	else // Faltan parametros
     	{
     		$data = array(
     			'status' => 'error',

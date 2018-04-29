@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Car extends Model
 {
-    protected table = 'cars';
+    protected $table = 'cars';
 
     // Relación de muchos a uno de la bd
     public function user(){
