@@ -5,7 +5,7 @@ use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\DB;
 use App\User;
 
-class JwtAuth(){
+class JwtAuth{
 	public $key;
 
 	public function __construct(){
@@ -49,7 +49,7 @@ class JwtAuth(){
 	public function checkToken($jwt, $getIdentity = false){
 
 		try{
-			$decoded = JWT:decode($jwt, $this->key, array('HS256'));
+			$decoded = JWT::decode($jwt, $this->key, array('HS256'));
 		}catch(\UnexpectedValueException $e){
 			$auth = false;
 		}catch(\DomainException $e){
