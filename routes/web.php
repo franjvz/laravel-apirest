@@ -15,6 +15,22 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/api/register', 'UserController@register');
+
+Route::group(
+	[
+	    'middleware' => 'cors',
+	    'prefix' => 'api'
+	],
+	function ($router) {
+	    Route::post('register', 'UserController@register');
+		Route::post('login', 'UserController@login');
+		Route::resource('cars', 'CarController');
+
+
+		// Do not let GET petitions to call Method Controller
+		Route::get('register', function(){return "Only POST requests allowed";});
+		Route::get('login', function(){return "Only POST requests allowed";});
+	});
+/*Route::post('/api/register', 'UserController@register');
 Route::post('/api/login', 'UserController@login');
-Route::resource('/api/cars', 'CarController');
+Route::resource('/api/cars', 'CarController');*/
