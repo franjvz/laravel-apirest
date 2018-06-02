@@ -27,10 +27,7 @@ Route::group(
 		Route::resource('cars', 'CarController');
 
 
-		// Do not let GET petitions to call Method Controller
+		// Do not let GET petitions to call Controller methods
 		Route::get('register', function(){return "Only POST requests allowed";});
 		Route::get('login', function(){return "Only POST requests allowed";});
 	});
-/*Route::post('/api/register', 'UserController@register');
-Route::post('/api/login', 'UserController@login');
-Route::resource('/api/cars', 'CarController');*/
