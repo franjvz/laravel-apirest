@@ -37,11 +37,23 @@ class CarController extends Controller
 
     	$checkToken = $this->jwtAuth->checkIfRequestValidated($request);
     	if ($checkToken){
-    		$car = Car::find($id)->load('user');
-	    	return response()->json(array(
-	    		'car' 	 => $car,
-	    		'status' => 'success'
-	    	),200);
+    		$car = Car::find($id);
+
+            if(is_object($car)){
+                $car->load('user');
+
+                return response()->json(array(
+                    'car'    => $car,
+                    'status' => 'success'
+                ),200);
+            }else{
+                return response()->json(array(
+                    'status' => 'error',
+                    'message' => 'El coche no existe'
+                ),200);
+            }
+
+	    	
     	}else{
 
     		return response()->json(array(
@@ -129,6 +141,13 @@ class CarController extends Controller
 			if($validate->fails()){
 				return response()->json($validate->errors(), 400);
 			}
+
+            // Eliminar campos innecesarios
+            unset($params_array['id']);
+            unset($params_array['user_id']);
+            unset($params_array['created_at']);
+            unset($params_array['updated_at']);
+            unset($params_array['user']);
 
     		// Actualizar el coche
     		$car = Car::where('id', $id)
